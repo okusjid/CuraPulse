@@ -1,0 +1,13 @@
+<h1>
+    {% if patient %}
+        {{ patient.full_name }}
+    {% else %}
+        Create Patient
+    {% endif %}
+</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+<a href="{% url 'patient_list_view' %}">Cancel</a>

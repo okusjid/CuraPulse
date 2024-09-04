@@ -1,0 +1,28 @@
+<h1>{{list_name}}</h1>
+<form method="GET">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name">
+    <input type="text" name="specialization" value="{{ specialization_filter }}" placeholder="Filter by specialization">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <tr>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Specialization</th>
+        <th>Actions</th>
+    </tr>
+    {% for doctor in doctors %}
+    <tr>
+        <td>{{ doctor.full_name }}</td>
+        <td>{{ doctor.email }}</td>
+        <td>{{ doctor.specialization }}</td>
+        <td>
+            <a href="{% url 'doctor_detail_view' doctor.pk %}">View</a>
+            <a href="{% url 'update_doctor_view' doctor.pk %}">Edit</a>
+            <a href="{% url 'delete_doctor_view' doctor.pk %}">Delete</a>
+            <a href="{% url 'doctor_dashboard_with_id' doctor.pk %}">See Appointments</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

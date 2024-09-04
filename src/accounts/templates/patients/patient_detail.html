@@ -1,0 +1,7 @@
+<h1>Patient Details</h1>
+<p><strong>Full Name:</strong> {{ patient.full_name }}</p>
+<p><strong>Email:</strong> {{ patient.email }}</p>
+<p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
+<p><strong>Gender:</strong> {{ patient.gender }}</p>
+{#<a href="{% url 'update_patient_view' doctor.pk %}">Edit</a>#}
+<a href="{% url 'patient_list_view' %}">Back to List</a>

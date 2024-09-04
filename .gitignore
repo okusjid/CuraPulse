@@ -1,0 +1,130 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+*.manifest
+*.spec
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# If you're using PostgreSQL, you might have a `*.pgsql` file
+*.pgsql
+
+# Migrations
+**/migrations/*
+
+# Environment Variables
+.env
+
+# Django static and media files
+/static/
+/media/
+
+# Virtual Environment
+env/
+venv/
+ENV/
+.venv/
+
+# VSCode or other editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*.so
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+coverage/
+
+# Profiling data
+.prof
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+
+# SQLite database
+*.sqlite3
+
+# pipenv
+Pipfile
+Pipfile.lock
+
+# Other backups and temporary files
+*.bak
+*.swp
+*.swo
+*.tmp
+*.orig
+*.rej
+
+# Docker (if Docker is ever introduced)
+Dockerfile
+docker-compose.yml
+*.dockerignore
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Ignore any custom, sensitive files
+# Add any other custom files you don’t want to commit
+
+# Ignore all files in any medical_reports directory
+**/medical_reports/*
+
+# Ignore the SRC\medical_reports directory
+SRC/medical_reports/

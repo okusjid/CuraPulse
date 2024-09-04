@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Dashboard</title>
+</head>
+
+<body>
+    <header>
+        <h1>Doctor Dashboard</h1>
+        <p>Welcome, Dr. {{ doctor_user.full_name }}!</p>
+    </header>
+
+    <section>
+        <h2>Profile Information</h2>
+        <p><strong>Full Name:</strong> {{ doctor_user.full_name }}</p>
+        <p><strong>Specialization:</strong> {{ doctor_user.specialization }}</p>
+        <p><strong>Phone Number:</strong> {{ doctor_user.phone_number }}</p>
+    </section>
+
+    <section>
+        <h2>Upcoming Appointments</h2>
+        {% if appointments_with_records %}
+            <ul>
+                {% for entry in appointments_with_records %}
+                    <li>
+                        <p><strong>Patient Name:</strong> {{ entry.appointment.patient.full_name }}</p>
+                        <p><strong>Appointment Date:</strong> {{ entry.appointment.scheduled_at }}</p>
+                        <form action="/patient-medical-records/" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="records" value="{{ entry.records }}">
+                            <input type="hidden" name="appointment_id" value="{{ entry.appointment.id }}">
+                            <input type="hidden" name="patient_id" value="{{ entry.appointment.patient.id }}">
+                            <input type="hidden" name="doctor_id" value="{{ doctor_user.id }}">
+                            <button type="submit">View Records</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p><strong>No upcoming appointments.</strong></p>
+        {% endif %}
+    </section>
+</body>
+
+</html>

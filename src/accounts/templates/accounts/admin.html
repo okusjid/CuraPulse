@@ -1,0 +1,19 @@
+{% if user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a>
+{% endif %}
+
+<h1>Welcome, Admin!</h1>
+<p>This is the admin dashboard.</p>
+
+<h2>Manage Doctors</h2>
+<ul>
+    <li><a href="{% url 'doctor_list_view' %}">View All Doctors</a></li>
+    <li><a href="{% url 'create_doctor_view' %}">Add New Doctor</a></li>
+</ul>
+
+<h2>Manage Patients</h2>
+<ul>
+    <li><a href="{% url 'patient_list_view' %}">View All Patients</a></li>
+    <li><a href="{% url 'create_patient_view' %}">Add New Patient</a></li>
+</ul>
+
