@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 class CustomUser(AbstractUser):
-    
     ROLE_CHOICES = [
         ('admin', 'Admin'),
         ('doctor', 'Doctor'),
@@ -24,9 +23,6 @@ class CustomUser(AbstractUser):
     gender = models.CharField(max_length=100, choices=GENDERS, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # def __str__(self):
-    #     return self.full_name
 
     def is_admin(self):
         return self.role == 'admin'
