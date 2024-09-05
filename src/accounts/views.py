@@ -32,7 +32,6 @@ def user_login(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 @login_required
-
 def doctor_dashboard(request, doctor_id=None):
     # user_id = request.GET.get('user_id')
     user_id = doctor_id if doctor_id else request.GET.get('user_id')
@@ -265,4 +264,3 @@ def delete_patient_view(request, pk):
         patient.delete()
         return redirect('patient_list_view')
     return render(request, 'patients/patient_confirm_delete.html', {'patient': patient})
-
