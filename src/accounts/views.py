@@ -1,10 +1,9 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from accounts.forms import LoginForm, DoctorProfileForm, CreateRecordForm ,PatientProfileForm # Import the DoctorProfileForm
+from accounts.forms import LoginForm, DoctorProfileForm, CreateRecordForm ,PatientProfileForm 
 from django.urls import reverse
-from .models import CustomUser, Appointment, MedicalRecord  # Import the CustomUser model
-
+from .models import CustomUser, Appointment, MedicalRecord
 
 def user_login(request):
     if request.method == 'POST':
@@ -33,9 +32,7 @@ def user_login(request):
 
 @login_required
 def doctor_dashboard(request, doctor_id=None):
-    # user_id = request.GET.get('user_id')
     user_id = doctor_id if doctor_id else request.GET.get('user_id')
-    # print(user_id)
     user = None
     if user_id:
         try:
@@ -52,11 +49,6 @@ def doctor_dashboard(request, doctor_id=None):
                 })
         except CustomUser.DoesNotExist:
             return redirect('user_login')
-    # if request.method == 'POST':
-    #    userform = LoginForm(request.POST)
-
-    # if userform.is_valid():
-    #     print(userform.cleaned_data)
     return render(request, 'doctors/doctor-info.html',{
         'doctor_user' : doctor_user,
         'appointments_with_records': appointments_with_records,
@@ -87,7 +79,6 @@ def records(request):
     if request.method == 'POST':
         records_form = CreateRecordForm(request.POST)
         if records_form.is_valid():
-            # print(records_form.cleaned_data)
             appointment_id = request.POST.get('appointment_id')
             patient_id = request.POST.get('patient_id')
             doctor_id = request.POST.get('doctor_id')
@@ -123,12 +114,11 @@ def records(request):
                 request.session['doctor_id'] = doctor_id
 
                 return redirect('record_list')
-
-                # return render(request, 'patients/med-records.html')
             except Exception as e:
                 print("Error:", e)
 
     return render(request, 'patients/med-records.html')
+
 @login_required
 def admin_dashboard(request):
     return render(request, 'accounts/admin.html')
