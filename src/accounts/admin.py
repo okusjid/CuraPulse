@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import CustomUser, Appointment, MedicalRecord  
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.hashers import make_password
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -89,5 +89,6 @@ admin.site.register(MedicalRecord, MedicalRecordAdmin)
 
 try:
     admin.site.unregister(Group)
+    admin.site.unregister(Permission)
 except admin.sites.NotRegistered:
     pass
