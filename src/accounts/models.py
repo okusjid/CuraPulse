@@ -46,13 +46,13 @@ class Appointment(models.Model):
         return f"Appointment with Dr. {self.doctor.full_name} for {self.patient.full_name} on {self.scheduled_at.strftime('%Y-%m-%d %H:%M')}"
 
 class MedicalRecord(models.Model):
-    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_doctor')
-    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_patient')
+    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_doctor', limit_choices_to={'role': 'doctor'})
+    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_patient', limit_choices_to={'role': 'patient'})
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='medical_records')
     diagnosis = models.TextField()
     treatment = models.TextField()
     notes = models.TextField(blank=True, null=True)
-    report = models.TextField(blank=True, null=True)
+    report = models.TextField(blank=True, null=True) # This should be a file upload field
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
