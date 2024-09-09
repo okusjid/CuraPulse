@@ -3,39 +3,48 @@
 {% block title %}Doctor Dashboard{% endblock %}
 
 {% block content %}
-<header>
-    <h1>Doctor Dashboard</h1>
-    <p>Welcome, Dr. {{ doctor_user.full_name }}!</p>
-</header>
+<div class="container mt-5">
+    <!-- Header Section -->
+    <header class="mb-4">
+        <h1 class="mb-3">Doctor Dashboard</h1>
+        <p class="lead">Welcome, Dr. {{ doctor_user.full_name }}!</p>
+    </header>
 
-<section>
-    <h2>Profile Information</h2>
-    <p><strong>Full Name:</strong> {{ doctor_user.full_name }}</p>
-    <p><strong>Specialization:</strong> {{ doctor_user.specialization }}</p>
-    <p><strong>Phone Number:</strong> {{ doctor_user.phone_number }}</p>
-</section>
+    <!-- Profile Information Section -->
+    <section class="mb-5">
+        <h2 class="mb-3">Profile Information</h2>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <p><strong>Full Name:</strong> {{ doctor_user.full_name }}</p>
+                <p><strong>Specialization:</strong> {{ doctor_user.specialization }}</p>
+                <p><strong>Phone Number:</strong> {{ doctor_user.phone_number }}</p>
+            </div>
+        </div>
+    </section>
 
-<section>
-    <h2>Upcoming Appointments</h2>
-    {% if appointments_with_records %}
-        <ul>
-            {% for entry in appointments_with_records %}
-                <li>
-                    <p><strong>Patient Name:</strong> {{ entry.appointment.patient.full_name }}</p>
-                    <p><strong>Appointment Date:</strong> {{ entry.appointment.scheduled_at }}</p>
-                    <form action="/patient-medical-records/" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="records" value="{{ entry.records }}">
-                        <input type="hidden" name="appointment_id" value="{{ entry.appointment.id }}">
-                        <input type="hidden" name="patient_id" value="{{ entry.appointment.patient.id }}">
-                        <input type="hidden" name="doctor_id" value="{{ doctor_user.id }}">
-                        <button type="submit" class="btn btn-primary">View Records</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p><strong>No upcoming appointments.</strong></p>
-    {% endif %}
-</section>
+    <!-- Upcoming Appointments Section -->
+    <section>
+        <h2 class="mb-3">Upcoming Appointments</h2>
+        {% if appointments_with_records %}
+            <ul class="list-group">
+                {% for entry in appointments_with_records %}
+                    <li class="list-group-item">
+                        <p><strong>Patient Name:</strong> {{ entry.appointment.patient.full_name }}</p>
+                        <p><strong>Appointment Date:</strong> {{ entry.appointment.scheduled_at }}</p>
+                        <form action="/patient-medical-records/" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="records" value="{{ entry.records }}">
+                            <input type="hidden" name="appointment_id" value="{{ entry.appointment.id }}">
+                            <input type="hidden" name="patient_id" value="{{ entry.appointment.patient.id }}">
+                            <input type="hidden" name="doctor_id" value="{{ doctor_user.id }}">
+                            <button type="submit" class="btn btn-primary btn-sm">View Records</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted"><strong>No upcoming appointments.</strong></p>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}
