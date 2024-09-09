@@ -121,7 +121,15 @@ def records(request):
 
 @login_required
 def admin_dashboard(request):
-    return render(request, 'accounts/admin.html')
+    if not request.user.is_admin():
+        return redirect('login')
+    context = {
+        'doctors': CustomUser.objects.filter(role='doctor'),
+        'patients': CustomUser.objects.filter(role='patient'),
+        'appointments': Appointment.objects.all(),
+        'records': MedicalRecord.objects.all(),
+    }
+    return render(request, 'accounts/admin.html', context)
 
 def admin_required(user):
     return user.is_authenticated and user.is_admin()
