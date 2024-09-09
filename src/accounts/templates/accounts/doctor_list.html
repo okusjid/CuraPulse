@@ -1,28 +1,49 @@
-<h1>{{list_name}}</h1>
-<form method="GET">
-    <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name">
-    <input type="text" name="specialization" value="{{ specialization_filter }}" placeholder="Filter by specialization">
-    <button type="submit">Search</button>
-</form>
+{% extends "base_generic.html" %}
 
-<table>
-    <tr>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Specialization</th>
-        <th>Actions</th>
-    </tr>
-    {% for doctor in doctors %}
-    <tr>
-        <td>{{ doctor.full_name }}</td>
-        <td>{{ doctor.email }}</td>
-        <td>{{ doctor.specialization }}</td>
-        <td>
-            <a href="{% url 'doctor_detail_view' doctor.pk %}">View</a>
-            <a href="{% url 'update_doctor_view' doctor.pk %}">Edit</a>
-            <a href="{% url 'delete_doctor_view' doctor.pk %}">Delete</a>
-            <a href="{% url 'doctor_dashboard_with_id' doctor.pk %}">See Appointments</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+{% block title %}{{ list_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ list_name }}</h1>
+
+    <!-- Search Form -->
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-5">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name" class="form-control">
+        </div>
+        <div class="col-md-5">
+            <input type="text" name="specialization" value="{{ specialization_filter }}" placeholder="Filter by specialization" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <!-- Doctor Table -->
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Specialization</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for doctor in doctors %}
+            <tr>
+                <td>{{ doctor.full_name }}</td>
+                <td>{{ doctor.email }}</td>
+                <td>{{ doctor.specialization }}</td>
+                <td>
+                    <a href="{% url 'doctor_detail_view' doctor.pk %}" class="btn btn-info btn-sm">View</a>
+                    <a href="{% url 'update_doctor_view' doctor.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'delete_doctor_view' doctor.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="{% url 'doctor_dashboard_with_id' doctor.pk %}" class="btn btn-secondary btn-sm">See Appointments</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

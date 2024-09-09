@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.hashers import make_password
 
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'email', 'role', 'created_at')
+    list_display = ('full_name', 'email', 'role',  'created_at', 'updated_at')
     search_fields = ('full_name', 'email', 'role', 'specialization')
     list_filter = ('role', 'specialization', 'gender')
     ordering = ('full_name',)
@@ -52,7 +52,7 @@ class AppointmentAdmin(admin.ModelAdmin):
         return form
 
 class MedicalRecordAdmin(admin.ModelAdmin):
-    list_display = ('doctor', 'patient', 'appointment', 'diagnosis', 'created_at')
+    list_display = ('doctor', 'patient', 'appointment', 'diagnosis', 'created_at', 'updated_at')
     search_fields = ('doctor__full_name', 'patient__full_name', 'diagnosis')
     
     list_filter = ('created_at', 'doctor', 'patient')
