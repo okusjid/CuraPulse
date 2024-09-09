@@ -1,5 +1,7 @@
 from django import forms
+from django.contrib.auth.hashers import make_password
 from .models import CustomUser 
+
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=100)
     password = forms.CharField(widget=forms.PasswordInput)
@@ -11,15 +13,15 @@ class DoctorProfileForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),  
         }
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data["password"]:
+            user.password = make_password(self.cleaned_data["password"])  # Hash the password
+        if commit:
+            user.save()
+        return user
 
-class CreateRecordForm(forms.Form):
-    diagnosis = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    treatment =forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    notes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    report = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-
-       
-        
 class PatientProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser 
@@ -27,4 +29,18 @@ class PatientProfileForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),  
         }
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data["password"]:
+            user.password = make_password(self.cleaned_data["password"])  # Hash the password
+        if commit:
+            user.save()
+        return user
+
+class CreateRecordForm(forms.Form):
+    diagnosis = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    treatment = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    notes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+    report = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
