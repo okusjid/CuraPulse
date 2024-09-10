@@ -41,8 +41,16 @@ class PatientProfileForm(forms.ModelForm):
             user.save()
         return user
 
-class CreateRecordForm(forms.Form):
-    diagnosis = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    treatment = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    notes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    report = forms.FileField(widget=forms.ClearableFileInput(attrs={'class':'form-control'}))  # Change to FileField
+from django import forms
+from .models import MedicalRecord 
+
+class CreateRecordForm(forms.ModelForm):  # Change to ModelForm
+    class Meta:
+        model = MedicalRecord  # Specify the model
+        fields = ['diagnosis', 'treatment', 'notes', 'report']  # Specify the fields to include
+        widgets = {
+            'diagnosis': forms.TextInput(attrs={'class': 'form-control'}),
+            'treatment': forms.TextInput(attrs={'class': 'form-control'}),
+            'notes': forms.TextInput(attrs={'class': 'form-control'}),
+            'report': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }

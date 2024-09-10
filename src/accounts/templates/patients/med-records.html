@@ -24,6 +24,8 @@
                             No report available
                         {% endif %}
                     </p>
+                    <!-- Update Button -->
+                    <a href="{% url 'records' %}?type=update&appointment_id={{ record.appointment.id }}&patient_id={{ record.patient.id }}&doctor_id={{ record.doctor.id }}" class="btn btn-primary">Update</a>
                 </li>
             {% endfor %}
         </ul>

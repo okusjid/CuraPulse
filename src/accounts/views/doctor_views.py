@@ -34,25 +34,72 @@ class DoctorDashboardView(LoginRequiredMixin, View):
 
 doctor_dashboard = DoctorDashboardView.as_view()
 
+# # Doctor List View (Admin only)
+# class DoctorListView(LoginRequiredMixin, ListView):
+#     model = CustomUser
+#     template_name = 'accounts/doctor_list.html'
+#     context_object_name = 'doctors'
+#     paginate_by = 5 # Optional: For pagination
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset().filter(role='doctor')
+
+#         # Apply search filter
+#         search_query = self.request.GET.get('search', '')
+#         if search_query:
+#             queryset = queryset.filter(full_name__icontains=search_query)
+
+#         # Apply specialization filter
+#         specialization_filter = self.request.GET.get('specialization', '')
+#         if specialization_filter:
+#             queryset = queryset.filter(specialization__icontains=specialization_filter)
+
+#         return queryset
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['list_name'] = "Doctor's List"
+#         context['search_query'] = self.request.GET.get('search', '')
+#         context['specialization_filter'] = self.request.GET.get('specialization', '')
+#         return context
+
+# doctor_list_view = DoctorListView.as_view()
+
+
+
+from django.core.cache import cache
+ # Ensure you have the correct import for your model
+
 # Doctor List View (Admin only)
 class DoctorListView(LoginRequiredMixin, ListView):
     model = CustomUser
     template_name = 'accounts/doctor_list.html'
     context_object_name = 'doctors'
-    paginate_by = 10  # Optional: For pagination
+    paginate_by = 5  # Optional: For pagination
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(role='doctor')
-
-        # Apply search filter
+        # Create a cache key based on search and specialization filters
         search_query = self.request.GET.get('search', '')
-        if search_query:
-            queryset = queryset.filter(full_name__icontains=search_query)
-
-        # Apply specialization filter
         specialization_filter = self.request.GET.get('specialization', '')
-        if specialization_filter:
-            queryset = queryset.filter(specialization__icontains=specialization_filter)
+        cache_key = f'doctor_list_{search_query}_{specialization_filter}'
+
+        # Try to get the cached queryset
+        queryset = cache.get(cache_key)
+
+        if queryset is None:
+            # Cache miss; perform the queryset filtering
+            queryset = super().get_queryset().filter(role='doctor')
+
+            # Apply search filter
+            if search_query:
+                queryset = queryset.filter(full_name__icontains=search_query)
+
+            # Apply specialization filter
+            if specialization_filter:
+                queryset = queryset.filter(specialization__icontains=specialization_filter)
+
+            # Store the filtered queryset in the cache for 15 minutes
+            cache.set(cache_key, queryset, timeout=30)
 
         return queryset
 
@@ -64,6 +111,7 @@ class DoctorListView(LoginRequiredMixin, ListView):
         return context
 
 doctor_list_view = DoctorListView.as_view()
+
 
 # Doctor Detail View
 class DoctorDetailView(LoginRequiredMixin, DetailView):

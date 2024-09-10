@@ -9,8 +9,12 @@
 </header>
 
 <section>
-    <form action="{% url 'update_record_view' record.id %}" method="POST">
+    <form action="{% url 'update_record_view' %}" method="POST">
         {% csrf_token %}
+        <input type="hidden" name="appointment_id" value="{{ appointment_id }}">
+        <input type="hidden" name="patient_id" value="{{ patient_id }}">
+        <input type="hidden" name="doctor_id" value="{{ doctor_id }}">
+        <input type="hidden" name="type" value="update">
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary">Update Record</button>
     </form>
