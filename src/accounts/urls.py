@@ -17,7 +17,7 @@ from .views import (
     create_update_patient_view,
     delete_patient_view,
     patient_detail_view,
-    patient_list_view,
+    patient_list_view
 )
 
 
@@ -42,6 +42,7 @@ urlpatterns = [
     path('record/', records_view, name='records'),
    
     path('admin-dashoard/', admin_dashboard, name= "admin_dashboard"),
+    path('reports/appointments/', admin_appointment_report_view, name='admin_appointment_report_view'),
 
     #Patient URL:
     path('patients/', patient_list_view, name ='patient_list_view'),

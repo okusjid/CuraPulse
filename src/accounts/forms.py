@@ -29,7 +29,8 @@ class PatientProfileForm(forms.ModelForm):
         model = CustomUser 
         fields = ['full_name', 'username','email','password', 'phone_number',  'date_of_birth', 'gender']  
         widgets = {
-            'password': forms.PasswordInput(),  
+            'password': forms.PasswordInput(),
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),  
         }
     
     def save(self, commit=True):
