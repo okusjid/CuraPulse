@@ -35,16 +35,27 @@ class CustomUser(AbstractUser):
     
 
 class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
     doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='doctor_appointments')
     patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='patient_appointments')
     scheduled_at = models.DateTimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    notes = models.TextField(null=True, blank=True)  # Optional field for extra details
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-   
     def __str__(self):
-        return f"Appointment with Dr. {self.doctor.full_name} for {self.patient.full_name} on {self.scheduled_at.strftime('%Y-%m-%d %H:%M')}"
+        return f"Dr. {self.doctor.full_name} -> {self.patient.full_name} on {self.scheduled_at.strftime('%Y-%m-%d %H:%M')} ({self.get_status_display()})"
 
+    def is_past_due(self):
+        """Check if the appointment is overdue."""
+        return self.scheduled_at < timezone.now() and self.status == 'pending'
+    
 class MedicalRecord(models.Model):
     doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_doctor', limit_choices_to={'role': 'doctor'})
     patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_patient', limit_choices_to={'role': 'patient'})

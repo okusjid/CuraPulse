@@ -6,7 +6,7 @@
 <div class="container mt-5">
     <div class="text-center mb-5">
         <h1 class="display-4">Welcome, Admin!</h1>
-        <p class="lead">Manage doctors, patients, and appointments from here.</p>
+        <p class="lead">Manage doctors, patients, appointments, and view reports from here.</p>
     </div>
 
     <!-- Row for stats (Total Doctors, Patients, Appointments) -->
@@ -40,10 +40,10 @@
         </div>
     </div>
 
-    <!-- Manage Doctors and Patients Section -->
+    <!-- Manage Doctors, Patients, and Reporting Section -->
     <div class="row g-4">
         <!-- Manage Doctors Section -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <i class="bi bi-person-badge" style="font-size: 3rem;"></i>
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Manage Patients Section -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <i class="bi bi-people" style="font-size: 3rem;"></i>
@@ -64,6 +64,18 @@
                     <p class="card-text">Add, update, or view patient profiles.</p>
                     <a href="{% url 'patient_list_view' %}" class="btn btn-primary mb-2">View All Patients</a>
                     <a href="{% url 'create_patient_view' %}" class="btn btn-outline-primary">Add New Patient</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Reports Section -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data" style="font-size: 3rem;"></i>
+                    <h2 class="card-title mt-3">Appointment Reports</h2>
+                    <p class="card-text">View detailed appointment reports with filters.</p>
+                    <a href="{% url 'admin_appointment_report_view' %}" class="btn btn-primary mb-2">View Reports</a>
                 </div>
             </div>
         </div>

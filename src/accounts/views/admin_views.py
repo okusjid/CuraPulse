@@ -3,6 +3,11 @@ from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from ..models import CustomUser, Appointment, MedicalRecord
+from django.shortcuts import render
+from django.utils.dateparse import parse_date
+
+
+
 
 # Admin Dashboard View
 class AdminDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -125,3 +130,51 @@ class AdminAppointmentListView(LoginRequiredMixin, AdminRequiredMixin, ListView)
         return context
 
 admin_appointment_list_view = AdminAppointmentListView.as_view()
+
+
+
+
+# Reporting View for Admin (Appointments per day in the provided time range with filters)
+class AdminAppointmentReportView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Appointment
+    template_name = 'accounts/appointment_report.html'
+    context_object_name = 'appointments'
+    paginate_by = 10
+
+    def test_func(self):
+        # Ensure that only admins can access this view 
+        return self.request.user.is_authenticated  and self.request.user.is_admin()
+
+    def get_queryset(self):
+        queryset = Appointment.objects.all()
+
+        # Filter by date range, using the 'scheduled_at' field instead of 'appointment_date'
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+
+        if start_date:
+            queryset = queryset.filter(scheduled_at__date__gte=parse_date(start_date))
+        if end_date:
+            queryset = queryset.filter(scheduled_at__date__lte=parse_date(end_date))
+
+        # Filter by appointment status
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        # Filter by doctor name
+        doctor_name = self.request.GET.get('doctor')
+        if doctor_name:
+            queryset = queryset.filter(doctor__full_name__icontains=doctor_name)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
+        context['status'] = self.request.GET.get('status', '')
+        context['doctor'] = self.request.GET.get('doctor', '')
+        return context
+
+admin_appointment_report_view = AdminAppointmentReportView.as_view()
