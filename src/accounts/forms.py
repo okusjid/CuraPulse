@@ -9,9 +9,11 @@ class LoginForm(forms.Form):
 class DoctorProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser 
+
         fields = ['full_name', 'username', 'email', 'phone_number', 'password','specialization', 'date_of_birth', 'gender'] 
         widgets = {
             'password': forms.PasswordInput(),  
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
     
     def save(self, commit=True):

@@ -24,7 +24,7 @@ class UserLoginView(View):
                 elif hasattr(user, 'is_admin') and user.is_admin():
                     return redirect('admin_dashboard')
                 elif hasattr(user, 'is_doctor') and user.is_doctor():
-                    return redirect(f'/doctor_dashboard?user_id={user.id}')
+                    return redirect(f'/doctor-dashboard?user_id={user.id}')
             else:
                 return render(request, self.template_name, {'form': form, 'error': 'Invalid credentials'})
         return render(request, self.template_name, {'form': form})
