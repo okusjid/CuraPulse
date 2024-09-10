@@ -31,12 +31,16 @@
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="h3 text-center">CuraPulse</h1>
             {% if user.is_authenticated %}
-                <ul class="navbar-nav {% if user.is_doctor %} ms-auto {% endif %}">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
-                    </li>
-                </ul>
-            {% endif %}
+            <ul class="navbar-nav {% if user.is_doctor %} ms-auto {% endif %}">
+                <li class="nav-item">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        {% endif %}
+        
         </div>
     </header>
     

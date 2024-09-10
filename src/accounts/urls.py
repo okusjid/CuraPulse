@@ -9,7 +9,7 @@ from .views import (
     doctor_list_view,
     user_login,
     doctor_dashboard,
-    user_logout,
+    CustomLogoutView,
     record_list,
     records,
     create_update_patient_view,
@@ -23,7 +23,8 @@ urlpatterns = [
 
     #User URL:
     path('', user_login, name='login'),
-    path('logout/', user_logout, name='logout'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
+
 
     #Doctor URL:
     path('doctor-dashboard/', doctor_dashboard, name='doctor_dashboard'),
