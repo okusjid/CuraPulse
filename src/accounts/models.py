@@ -45,14 +45,30 @@ class Appointment(models.Model):
     def __str__(self):
         return f"Appointment with Dr. {self.doctor.full_name} for {self.patient.full_name} on {self.scheduled_at.strftime('%Y-%m-%d %H:%M')}"
 
+from django.db import models
+
 class MedicalRecord(models.Model):
-    doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_doctor', limit_choices_to={'role': 'doctor'})
-    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='medical_records_as_patient', limit_choices_to={'role': 'patient'})
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='medical_records')
+    doctor = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='medical_records_as_doctor', 
+        limit_choices_to={'role': 'doctor'}
+    )
+    patient = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='medical_records_as_patient', 
+        limit_choices_to={'role': 'patient'}
+    )
+    appointment = models.ForeignKey(
+        Appointment, 
+        on_delete=models.CASCADE, 
+        related_name='medical_records'
+    )
     diagnosis = models.TextField()
     treatment = models.TextField()
     notes = models.TextField(blank=True, null=True)
-    report = models.TextField(blank=True, null=True) # This should be a file upload field
+    report = models.FileField(upload_to='reports/', blank=True, null=True)  # Updated to FileField
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -60,7 +76,7 @@ class MedicalRecord(models.Model):
         return f"Medical Record for {self.diagnosis} - {self.created_at.strftime('%Y-%m-%d')}"
 
     def is_doctor(self):
-        return self.role == 'doctor'
+        return self.doctor.role == 'doctor'  # Updated to use doctor relation
 
     def is_patient(self):
-        return self.role == 'patient'
+        return self.patient.role == 'patient'  # Updated to use patient relation

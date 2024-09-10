@@ -44,5 +44,4 @@ class CreateRecordForm(forms.Form):
     diagnosis = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
     treatment = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
     notes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-    report = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-
+    report = forms.FileField(widget=forms.ClearableFileInput(attrs={'class':'form-control'}))  # Change to FileField

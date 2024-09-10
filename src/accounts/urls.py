@@ -1,6 +1,8 @@
 
 from django.urls import path
 from django.contrib.auth.views import LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import (
     admin_dashboard,
     create_update_doctor_view,
@@ -11,10 +13,11 @@ from .views import (
     doctor_dashboard,
     record_list_view,
     records_view,
+    
     create_update_patient_view,
     delete_patient_view,
     patient_detail_view,
-    patient_list_view
+    patient_list_view,
 )
 
 
@@ -37,6 +40,7 @@ urlpatterns = [
     
     #Record URL:
     path('record/', records_view, name='records'),
+   
     path('admin-dashoard/', admin_dashboard, name= "admin_dashboard"),
 
     #Patient URL:
@@ -46,4 +50,4 @@ urlpatterns = [
     path('patients/update/<int:pk>/', create_update_patient_view, name='update_patient_view'),
     path('patients/delete/<int:pk>/', delete_patient_view, name='delete_patient_view'),
     path('patient-medical-records/', record_list_view, name='record_list' ),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

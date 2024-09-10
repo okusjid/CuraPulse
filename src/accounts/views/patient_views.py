@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.db import transaction  # Import transaction
 from ..models import CustomUser
 from ..forms import PatientProfileForm
 
@@ -65,12 +66,18 @@ class CreateUpdatePatientView(LoginRequiredMixin, CreateView, UpdateView):
             return get_object_or_404(CustomUser, pk=pk, role='patient')
         return None  # For creating a new patient
 
+    @transaction.atomic  # Wrap form submission in a transaction
     def form_valid(self, form):
         """Handle the valid form submission."""
-        patient_profile = form.save(commit=False)
-        patient_profile.role = 'patient'  # Ensure the role is set to 'patient'
-        patient_profile.save()
-        return super().form_valid(form)
+        try:
+            with transaction.atomic():
+                patient_profile = form.save(commit=False)
+                patient_profile.role = 'patient'  # Ensure the role is set to 'patient'
+                patient_profile.save()
+            return super().form_valid(form)
+        except Exception as e:
+            form.add_error(None, str(e))
+            return self.form_invalid(form)
 
 create_update_patient_view = CreateUpdatePatientView.as_view()
 
@@ -84,5 +91,15 @@ class DeletePatientView(LoginRequiredMixin, DeleteView):
         """Get the patient object based on the primary key."""
         pk = self.kwargs.get('pk')
         return get_object_or_404(CustomUser, pk=pk, role='patient')
+
+    @transaction.atomic  # Wrap deletion in a transaction
+    def delete(self, request, *args, **kwargs):
+        """Delete the patient within a transaction."""
+        try:
+            with transaction.atomic():
+                return super().delete(request, *args, **kwargs)
+        except Exception as e:
+            # Handle any exceptions, maybe redirect to an error page or show a message
+            return redirect('patient_list_view')
 
 delete_patient_view = DeletePatientView.as_view()
