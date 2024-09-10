@@ -11,11 +11,15 @@
             {{ error }}
         </div>
     {% endif %}
-    
+    {% if not user.is_authenticated %}
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>  
     </form>
+    {% else %}
+    <p>You are already logged in as {{ user.username }}.</p>
+    <a href="/accounts/logout/">Logout</a>
+    {% endif %}
 </div>
 {% endblock %}
