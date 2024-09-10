@@ -30,10 +30,3 @@ class UserLoginView(View):
         return render(request, self.template_name, {'form': form})
 
 user_login = UserLoginView.as_view()
-
-# class CustomLogoutView(View):
-#     def post(self, request, *args, **kwargs):
-#         logout(request)
-#         return redirect('login')
-
-# user_logout = CustomLogoutView.as_view()
