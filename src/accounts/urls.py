@@ -1,6 +1,6 @@
 
 from django.urls import path
-
+from django.contrib.auth.views import LogoutView
 from .views import (
     admin_dashboard,
     create_update_doctor_view,
@@ -9,7 +9,6 @@ from .views import (
     doctor_list_view,
     user_login,
     doctor_dashboard,
-    user_logout,
     record_list_view,
     records_view,
     create_update_patient_view,
@@ -23,7 +22,8 @@ urlpatterns = [
 
     #User URL:
     path('', user_login, name='login'),
-    path('logout/', user_logout, name='logout'),
+    path('logout/', LogoutView.as_view(next_page=''), name='logout'),
+
 
 
     #Doctor URL:

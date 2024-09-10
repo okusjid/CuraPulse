@@ -24,6 +24,6 @@ urlpatterns = [
 
 admin.site.site_header = "CuraPulse"
 admin.site.site_title = "CuraPulse Admin Portal"
-admin.site.index_title = "Welcome to CuraPulse Admin Portal"
+admin.site.index_title = "CuraPulse Admin Portal"
 
 

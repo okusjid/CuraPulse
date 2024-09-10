@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.views import View
 from ..forms import LoginForm
 
@@ -31,9 +31,9 @@ class UserLoginView(View):
 
 user_login = UserLoginView.as_view()
 
-class CustomLogoutView(View):
-    def post(self, request, *args, **kwargs):
-        logout(request)
-        return redirect('login')
+# class CustomLogoutView(View):
+#     def post(self, request, *args, **kwargs):
+#         logout(request)
+#         return redirect('login')
 
-user_logout = CustomLogoutView.as_view()
+# user_logout = CustomLogoutView.as_view()
