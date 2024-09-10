@@ -13,7 +13,7 @@ from .views import (
     doctor_dashboard,
     record_list_view,
     records_view,
-    
+    admin_appointment_report_view,
     create_update_patient_view,
     delete_patient_view,
     patient_detail_view,

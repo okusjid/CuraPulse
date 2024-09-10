@@ -35,35 +35,24 @@ class DoctorDashboardView(LoginRequiredMixin, View):
 doctor_dashboard = DoctorDashboardView.as_view()
 
 # Doctor List View (Admin only)
-from django.core.cache import cache
-
 class DoctorListView(LoginRequiredMixin, ListView):
     model = CustomUser
     template_name = 'accounts/doctor_list.html'
     context_object_name = 'doctors'
-    paginate_by = 10
+    paginate_by = 10  # Optional: For pagination
 
     def get_queryset(self):
-        search_query = self.request.GET.get('search', '')
-        specialization_filter = self.request.GET.get('specialization', '')
-
-        # Create a unique cache key based on the filters
-        cache_key = f'doctor_list_{search_query}_{specialization_filter}'
-        cached_queryset = cache.get(cache_key)
-
-        if cached_queryset:
-            return cached_queryset
-
         queryset = super().get_queryset().filter(role='doctor')
 
+        # Apply search filter
+        search_query = self.request.GET.get('search', '')
         if search_query:
             queryset = queryset.filter(full_name__icontains=search_query)
 
+        # Apply specialization filter
+        specialization_filter = self.request.GET.get('specialization', '')
         if specialization_filter:
             queryset = queryset.filter(specialization__icontains=specialization_filter)
-
-        # Cache the queryset for 5 minutes
-        cache.set(cache_key, queryset, timeout=300)
 
         return queryset
 
@@ -83,22 +72,9 @@ class DoctorDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'doctor'
 
     def get_object(self):
+        # Fetch the doctor object based on the primary key (pk)
         pk = self.kwargs.get('pk')
-
-        # Try to get cached doctor details
-        cache_key = f'doctor_detail_{pk}'
-        cached_doctor = cache.get(cache_key)
-
-        if cached_doctor:
-            return cached_doctor
-
-        doctor = get_object_or_404(CustomUser, pk=pk, role='doctor')
-
-        # Cache the doctor details for 10 minutes
-        cache.set(cache_key, doctor, timeout=600)
-
-        return doctor
-
+        return get_object_or_404(CustomUser, pk=pk, role='doctor')
 
 doctor_detail_view = DoctorDetailView.as_view()
 
