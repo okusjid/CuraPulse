@@ -1,0 +1,28 @@
+{% extends "base_generic.html" %}
+
+{% block title %}Patient Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Patient Details</h1>
+    
+    <dl class="row">
+        <dt class="col-sm-3"><strong>Full Name:</strong></dt>
+        <dd class="col-sm-9">{{ patient.full_name }}</dd>
+        
+        <dt class="col-sm-3"><strong>Email:</strong></dt>
+        <dd class="col-sm-9">{{ patient.email }}</dd>
+        
+        <dt class="col-sm-3"><strong>Phone Number:</strong></dt>
+        <dd class="col-sm-9">{{ patient.phone_number }}</dd>
+        
+        <dt class="col-sm-3"><strong>Gender:</strong></dt>
+        <dd class="col-sm-9">{{ patient.gender }}</dd>
+    </dl>
+
+    {# Uncomment the following line if you want to provide an edit option #}
+    {# <a href="{% url 'update_patient_view' patient.pk %}" class="btn btn-primary">Edit</a> #}
+
+    <a href="{% url 'patient_list_view' %}" class="btn btn-secondary">Back to List</a>
+</div>
+{% endblock %}
