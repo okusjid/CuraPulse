@@ -21,9 +21,6 @@ __pycache__/
 # If you're using PostgreSQL, you might have a `*.pgsql` file
 *.pgsql
 
-# Migrations
-**/migrations/*
-
 # Environment Variables
 .env
 
