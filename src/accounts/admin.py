@@ -34,14 +34,15 @@ class CustomUserAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ('doctor', 'patient', 'scheduled_at', 'created_at')
+    list_display = ('doctor', 'patient', 'scheduled_at', 'created_at', 'status')
     search_fields = ('doctor__full_name', 'patient__full_name')
     list_filter = ('scheduled_at', 'doctor', 'patient')
 
     fieldsets = (
         ('Appointment Information', {
-            'fields': ('doctor', 'patient', 'scheduled_at')
-        }),
+            'fields': ('doctor', 'patient', 'scheduled_at', 'status')
+        })
+        ,
     )
 
     def get_form(self, request, obj=None, **kwargs):
