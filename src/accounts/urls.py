@@ -9,9 +9,9 @@ from .views import (
     doctor_list_view,
     user_login,
     doctor_dashboard,
-    CustomLogoutView,
-    record_list,
-    records,
+    user_logout,
+    record_list_view,
+    records_view,
     create_update_patient_view,
     delete_patient_view,
     patient_detail_view,
@@ -23,7 +23,7 @@ urlpatterns = [
 
     #User URL:
     path('', user_login, name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('logout/', user_logout, name='logout'),
 
 
     #Doctor URL:
@@ -36,7 +36,7 @@ urlpatterns = [
     path('doctors/delete/<int:pk>/', delete_doctor_view, name='delete_doctor_view'),
     
     #Record URL:
-    path('record/', records, name='records'),
+    path('record/', records_view, name='records'),
     path('admin-dashoard/', admin_dashboard, name= "admin_dashboard"),
 
     #Patient URL:
@@ -45,5 +45,5 @@ urlpatterns = [
     path('patients/create/', create_update_patient_view, name='create_patient_view'),
     path('patients/update/<int:pk>/', create_update_patient_view, name='update_patient_view'),
     path('patients/delete/<int:pk>/', delete_patient_view, name='delete_patient_view'),
-    path('patient-medical-records/', record_list, name='record_list' ),
+    path('patient-medical-records/', record_list_view, name='record_list' ),
 ]
