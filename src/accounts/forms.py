@@ -51,6 +51,5 @@ class CreateRecordForm(forms.ModelForm):  # Change to ModelForm
         widgets = {
             'diagnosis': forms.TextInput(attrs={'class': 'form-control'}),
             'treatment': forms.TextInput(attrs={'class': 'form-control'}),
-            'notes': forms.TextInput(attrs={'class': 'form-control'}),
             'report': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

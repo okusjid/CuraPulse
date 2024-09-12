@@ -39,10 +39,8 @@ from ..forms import PatientProfileForm
 
 # patient_list_view = PatientListView.as_view()
 
-
 from django.core.cache import cache
 
-# Patient List View (Admin only)
 class PatientListView(LoginRequiredMixin, ListView):
     model = CustomUser
     template_name = 'patients/patient_list.html'
@@ -50,42 +48,36 @@ class PatientListView(LoginRequiredMixin, ListView):
     paginate_by = 10  # Optional: For pagination
 
     def get_queryset(self):
-        """Override to filter patients based on search query and gender filter."""
-        # Get search and gender filter values
         search_query = self.request.GET.get('search', '')
         gender_filter = self.request.GET.get('gender', '')
-
-        # Create a unique cache key based on the filters
         cache_key = f'patient_list_{search_query}_{gender_filter}'
 
-        # Try to get the cached queryset
         queryset = cache.get(cache_key)
 
         if queryset is None:
-            # Cache miss; perform the queryset filtering
             queryset = CustomUser.objects.filter(role='patient')
 
-            # Apply search filter
             if search_query:
                 queryset = queryset.filter(full_name__icontains=search_query)
 
-            # Apply gender filter
             if gender_filter:
                 queryset = queryset.filter(gender__icontains=gender_filter)
 
-            # Cache the filtered queryset for 1 minute (60 seconds)
-            cache.set(cache_key, queryset, timeout=60)  # Reduced to 1 minute for testing
+            # Order by a specific field, e.g., 'full_name'
+            queryset = queryset.order_by('full_name')  # Adjust ordering as needed
+
+            cache.set(cache_key, queryset, timeout=60)
 
         return queryset
 
     def get_context_data(self, **kwargs):
-        """Add additional context variables."""
         context = super().get_context_data(**kwargs)
         context['list_name'] = "Patient's List"
         context['search_query'] = self.request.GET.get('search', '')
         context['gender_filter'] = self.request.GET.get('gender', '')
         return context
 
+# Use this view in your URLs
 patient_list_view = PatientListView.as_view()
 
 

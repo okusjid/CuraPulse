@@ -66,11 +66,8 @@ doctor_dashboard = DoctorDashboardView.as_view()
 # doctor_list_view = DoctorListView.as_view()
 
 
-
 from django.core.cache import cache
- # Ensure you have the correct import for your model
 
-# Doctor List View (Admin only)
 class DoctorListView(LoginRequiredMixin, ListView):
     model = CustomUser
     template_name = 'accounts/doctor_list.html'
@@ -78,27 +75,24 @@ class DoctorListView(LoginRequiredMixin, ListView):
     paginate_by = 5  # Optional: For pagination
 
     def get_queryset(self):
-        # Create a cache key based on search and specialization filters
         search_query = self.request.GET.get('search', '')
         specialization_filter = self.request.GET.get('specialization', '')
         cache_key = f'doctor_list_{search_query}_{specialization_filter}'
 
-        # Try to get the cached queryset
         queryset = cache.get(cache_key)
 
         if queryset is None:
-            # Cache miss; perform the queryset filtering
-            queryset = super().get_queryset().filter(role='doctor')
+            queryset = CustomUser.objects.filter(role='doctor')
 
-            # Apply search filter
             if search_query:
                 queryset = queryset.filter(full_name__icontains=search_query)
 
-            # Apply specialization filter
             if specialization_filter:
                 queryset = queryset.filter(specialization__icontains=specialization_filter)
 
-            # Store the filtered queryset in the cache for 15 minutes
+            # Order by a specific field, e.g., 'full_name'
+            queryset = queryset.order_by('full_name')  # Adjust ordering as needed
+
             cache.set(cache_key, queryset, timeout=30)
 
         return queryset
@@ -110,7 +104,10 @@ class DoctorListView(LoginRequiredMixin, ListView):
         context['specialization_filter'] = self.request.GET.get('specialization', '')
         return context
 
+
+# Use this view in your URLs
 doctor_list_view = DoctorListView.as_view()
+
 
 
 # Doctor Detail View

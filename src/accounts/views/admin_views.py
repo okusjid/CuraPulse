@@ -7,8 +7,6 @@ from django.shortcuts import render
 from django.utils.dateparse import parse_date
 
 
-
-
 # Admin Dashboard View
 class AdminDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'accounts/admin.html'
@@ -120,7 +118,7 @@ class AdminAppointmentListView(LoginRequiredMixin, AdminRequiredMixin, ListView)
         patient_filter = self.request.GET.get('patient', '')
         if patient_filter:
             queryset = queryset.filter(patient__full_name__icontains=patient_filter)
-
+            
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -132,9 +130,8 @@ class AdminAppointmentListView(LoginRequiredMixin, AdminRequiredMixin, ListView)
 admin_appointment_list_view = AdminAppointmentListView.as_view()
 
 
+from django.core.cache import cache
 
-
-# Reporting View for Admin (Appointments per day in the provided time range with filters)
 class AdminAppointmentReportView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Appointment
     template_name = 'accounts/appointment_report.html'
@@ -143,29 +140,34 @@ class AdminAppointmentReportView(LoginRequiredMixin, UserPassesTestMixin, ListVi
 
     def test_func(self):
         # Ensure that only admins can access this view 
-        return self.request.user.is_authenticated  and self.request.user.is_admin()
+        return self.request.user.is_authenticated and self.request.user.is_admin()
 
     def get_queryset(self):
-        queryset = Appointment.objects.all()
+        # Create a cache key based on filters
+        start_date = self.request.GET.get('start_date', '')
+        end_date = self.request.GET.get('end_date', '')
+        status = self.request.GET.get('status', '')
+        doctor_name = self.request.GET.get('doctor', '')
+        cache_key = f'appointment_report_{start_date}_{end_date}_{status}_{doctor_name}'
 
-        # Filter by date range, using the 'scheduled_at' field instead of 'appointment_date'
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
+        # Try to get the cached queryset
+        queryset = cache.get(cache_key)
 
-        if start_date:
-            queryset = queryset.filter(scheduled_at__date__gte=parse_date(start_date))
-        if end_date:
-            queryset = queryset.filter(scheduled_at__date__lte=parse_date(end_date))
+        if queryset is None:
+            # Cache miss: Fetch and filter appointments
+            queryset = Appointment.objects.all()
 
-        # Filter by appointment status
-        status = self.request.GET.get('status')
-        if status:
-            queryset = queryset.filter(status=status)
+            if start_date:
+                queryset = queryset.filter(scheduled_at__date__gte=parse_date(start_date))
+            if end_date:
+                queryset = queryset.filter(scheduled_at__date__lte=parse_date(end_date))
+            if status:
+                queryset = queryset.filter(status=status)
+            if doctor_name:
+                queryset = queryset.filter(doctor__full_name__icontains=doctor_name)
 
-        # Filter by doctor name
-        doctor_name = self.request.GET.get('doctor')
-        if doctor_name:
-            queryset = queryset.filter(doctor__full_name__icontains=doctor_name)
+            # Cache the filtered queryset for 1 minute (60 seconds)
+            cache.set(cache_key, queryset, timeout=60)
 
         return queryset
 
