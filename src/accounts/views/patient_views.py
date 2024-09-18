@@ -6,39 +6,6 @@ from django.db import transaction  # Import transaction
 from ..models import CustomUser
 from ..forms import PatientProfileForm
 
-# Patient List View (Admin only)
-# class PatientListView(LoginRequiredMixin, ListView):
-#     model = CustomUser
-#     template_name = 'patients/patient_list.html'
-#     context_object_name = 'patients'
-#     paginate_by = 10  # Optional: For pagination
-
-#     def get_queryset(self):
-#         """Override to filter patients based on search query and gender filter."""
-#         queryset = CustomUser.objects.filter(role='patient')
-
-#         # Apply search filter
-#         search_query = self.request.GET.get('search', '')
-#         if search_query:
-#             queryset = queryset.filter(full_name__icontains=search_query)
-
-#         # Apply gender filter
-#         gender_filter = self.request.GET.get('gender', '')
-#         if gender_filter:
-#             queryset = queryset.filter(gender__icontains=gender_filter)
-
-#         return queryset
-
-#     def get_context_data(self, **kwargs):
-#         """Add additional context variables."""
-#         context = super().get_context_data(**kwargs)
-#         context['list_name'] = "Patient's List"
-#         context['search_query'] = self.request.GET.get('search', '')
-#         context['gender_filter'] = self.request.GET.get('gender', '')
-#         return context
-
-# patient_list_view = PatientListView.as_view()
-
 from django.core.cache import cache
 
 class PatientListView(LoginRequiredMixin, ListView):

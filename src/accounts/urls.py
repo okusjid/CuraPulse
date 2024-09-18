@@ -1,54 +1,50 @@
-
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import (
-    admin_dashboard,
-    create_update_doctor_view,
-    delete_doctor_view,
-    doctor_detail_view,
-    doctor_list_view,
-    user_login,
-    doctor_dashboard,
-    record_list_view,
-    records_view,
-    admin_appointment_report_view,
-    create_update_patient_view,
-    delete_patient_view,
-    patient_detail_view,
-    patient_list_view,
-
-)
-
-
+from . import views
+from rest_framework.authtoken.views import obtain_auth_token
+from accounts.views.appointments_views import AppointmentListCreateAPIView , AppointmentDetailAPIView
+from django.urls import path
 urlpatterns = [
-
-    #User URL:
-    path('', user_login, name='login'),
+    # User URL:
+    path('', views.user_login, name='login'),
     path('logout/', LogoutView.as_view(next_page=''), name='logout'),
 
+    # Doctor URL:
+    path('doctor-dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
+    path('doctor-dashboard/<int:doctor_id>/', views.doctor_dashboard, name='doctor_dashboard_with_id'),
+    path('doctors/', views.doctor_list_view, name='doctor_list_view'),
+    path('doctors/<int:pk>/', views.doctor_detail_view, name='doctor_detail_view'),
+    path('doctors/create/', views.create_update_doctor_view, name='create_doctor_view'),
+    path('doctors/update/<int:pk>/', views.create_update_doctor_view, name='update_doctor_view'),
+    path('doctors/delete/<int:pk>/', views.delete_doctor_view, name='delete_doctor_view'),
+
+    # Record URL:
+    path('record/', views.records_view, name='records'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('reports/appointments/', views.admin_appointment_report_view, name='admin_appointment_report_view'),
+
+    # Patient URL:
+    path('patients/', views.patient_list_view, name='patient_list_view'),
+    path('patients/<int:pk>/', views.patient_detail_view, name='patient_detail_view'),
+    path('patients/create/', views.create_update_patient_view, name='create_patient_view'),
+    path('patients/update/<int:pk>/', views.create_update_patient_view, name='update_patient_view'),
+    path('patients/delete/<int:pk>/', views.delete_patient_view, name='delete_patient_view'),
+    path('patient-medical-records/', views.record_list_view, name='record_list'),
+
+    # Appointment URLs:
+    path('appointments/', AppointmentListCreateAPIView.as_view(), name='appointment-list-create'),
+    path('appointments/<int:pk>/', AppointmentDetailAPIView.as_view(), name='appointment-detail'),
+
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 
 
-    #Doctor URL:
-    path('doctor-dashboard/', doctor_dashboard, name='doctor_dashboard'),
-    path('doctor-dashboard/<int:doctor_id>/', doctor_dashboard, name='doctor_dashboard_with_id'),
-    path('doctors/', doctor_list_view, name='doctor_list_view'),
-    path('doctors/<int:pk>/', doctor_detail_view, name='doctor_detail_view'),
-    path('doctors/create/', create_update_doctor_view, name='create_doctor_view'),
-    path('doctors/update/<int:pk>/', create_update_doctor_view, name='update_doctor_view'),
-    path('doctors/delete/<int:pk>/', delete_doctor_view, name='delete_doctor_view'),
-    
-    #Record URL:
-    path('record/', records_view, name='records'),
-    path('admin-dashoard/', admin_dashboard, name= "admin_dashboard"),
-    path('reports/appointments/', admin_appointment_report_view, name='admin_appointment_report_view'),
+ 
+  
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-    #Patient URL:
-    path('patients/', patient_list_view, name ='patient_list_view'),
-    path('patients/<int:pk>/', patient_detail_view, name='patient_detail_view'),
-    path('patients/create/', create_update_patient_view, name='create_patient_view'),
-    path('patients/update/<int:pk>/', create_update_patient_view, name='update_patient_view'),
-    path('patients/delete/<int:pk>/', delete_patient_view, name='delete_patient_view'),
-    path('patient-medical-records/', record_list_view, name='record_list' ),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+

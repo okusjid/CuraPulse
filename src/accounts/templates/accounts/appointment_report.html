@@ -37,6 +37,16 @@
     {% if appointments %}
         <p class="lead"><strong>{{ appointments|length }}</strong> appointment(s) found matching your criteria.</p>
 
+        <!-- Daily Appointment Counts -->
+        {% if daily_counts %}
+            <h4 class="mt-4">Daily Appointment Counts</h4>
+            <ul>
+                {% for entry in daily_counts %}
+                    <li>{{ entry.date }}: {{ entry.count }} appointment(s)</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <!-- Appointments Table -->
         <div class="table-responsive">
             <table class="table table-hover table-bordered align-middle">
