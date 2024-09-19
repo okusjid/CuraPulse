@@ -1,23 +1,33 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction  # Import transaction
+from django.db import transaction
 from ..models import MedicalRecord, Appointment, CustomUser
 from ..forms import CreateRecordForm
-
 import logging
 from django.core.cache import cache
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
 class RecordListView(LoginRequiredMixin, View):
+    """
+    A view to display and manage medical records associated with an appointment, patient, and doctor.
+    Caches the medical records for faster access and invalidates the cache when a new record is added.
+    """
+
     template_name = 'patients/med-records.html'
 
     def get(self, request):
+        """
+        Handles the GET request to display medical records for a specific appointment, patient, and doctor.
+        Uses caching to improve performance.
+        """
         appointment_id = request.session.get('appointment_id')
         patient_id = request.session.get('patient_id')
         doctor_id = request.session.get('doctor_id')
 
+        # Cache key based on the appointment, patient, and doctor IDs
         cache_key = f'record_list_{appointment_id}_{patient_id}_{doctor_id}'
         records = cache.get(cache_key)
 
@@ -43,6 +53,9 @@ class RecordListView(LoginRequiredMixin, View):
         })
 
     def post(self, request):
+        """
+        Handles the POST request to create a new medical record and invalidates the relevant cache entry.
+        """
         appointment_id = request.POST.get('appointment_id') or request.session.get('appointment_id')
         patient_id = request.POST.get('patient_id') or request.session.get('patient_id')
         doctor_id = request.POST.get('doctor_id') or request.session.get('doctor_id')
@@ -51,12 +64,18 @@ class RecordListView(LoginRequiredMixin, View):
         record_form = CreateRecordForm(request.POST)
 
         if record_form.is_valid():
-            with transaction.atomic():
-                record_form.save()
+            try:
+                with transaction.atomic():
+                    record_form.save()
 
-            cache_key = f'record_list_{appointment_id}_{patient_id}_{doctor_id}'
-            cache.delete(cache_key)
-            logger.info(f'Cache invalidated for key: {cache_key}')
+                cache_key = f'record_list_{appointment_id}_{patient_id}_{doctor_id}'
+                cache.delete(cache_key)
+                logger.info(f'Cache invalidated for key: {cache_key}')
+
+                return redirect('record_list_view')  # Redirect after successful creation
+            except Exception as e:
+                logger.error(f"Error saving record: {e}")
+                record_form.add_error(None, "There was an error saving the record.")
 
         record_lists = {
             'appointment_id': appointment_id,
@@ -74,19 +93,25 @@ class RecordListView(LoginRequiredMixin, View):
 record_list_view = RecordListView.as_view()
 
 
-from django.core.exceptions import MultipleObjectsReturned
-
 class RecordsView(LoginRequiredMixin, View):
+    """
+    A view to handle the creation and updating of medical records for a specific appointment, patient, and doctor.
+    """
+
     template_name = 'patients/med-records.html'
     form_class = CreateRecordForm
 
     def get(self, request):
+        """
+        Handles the GET request to render a form for either creating or updating a medical record.
+        The form will be pre-filled if updating a record.
+        """
         appointment_id = request.GET.get('appointment_id')
         patient_id = request.GET.get('patient_id')
         doctor_id = request.GET.get('doctor_id')
         type_edit = request.GET.get('type')
 
-        print(f"Received: appointment_id={appointment_id}, patient_id={patient_id}, doctor_id={doctor_id}, type_edit={type_edit}")
+        logger.info(f"Received: appointment_id={appointment_id}, patient_id={patient_id}, doctor_id={doctor_id}, type_edit={type_edit}")
 
         if type_edit == 'update':
             try:
@@ -95,15 +120,25 @@ class RecordsView(LoginRequiredMixin, View):
             except MultipleObjectsReturned:
                 medical_records = MedicalRecord.objects.filter(appointment_id=appointment_id, patient_id=patient_id)
                 form = self.form_class(instance=medical_records.first())  # Using the first record (not ideal)
+                logger.warning(f"Multiple medical records found for appointment_id={appointment_id} and patient_id={patient_id}")
             except MedicalRecord.DoesNotExist:
-                print(f"No record found for appointment_id={appointment_id}, patient_id={patient_id}")
+                logger.info(f"No record found for appointment_id={appointment_id}, patient_id={patient_id}")
                 form = self.form_class()  # Show an empty form
         else:
             form = self.form_class()
 
-        return render(request, self.template_name, {'form': form, 'appointment_id': appointment_id, 'patient_id': patient_id, 'doctor_id': doctor_id})
+        return render(request, self.template_name, {
+            'form': form,
+            'appointment_id': appointment_id,
+            'patient_id': patient_id,
+            'doctor_id': doctor_id
+        })
 
     def post(self, request):
+        """
+        Handles the POST request to create or update a medical record. The form data is validated,
+        and the record is either created or updated in the database.
+        """
         records_form = self.form_class(request.POST, request.FILES)  # Include request.FILES to handle file uploads
 
         if records_form.is_valid():
@@ -142,10 +177,16 @@ class RecordsView(LoginRequiredMixin, View):
                 return redirect('record_list_view')  # Redirect to your list view after the update
 
             except Exception as e:
-                print("Error:", e)
+                logger.error(f"Error during record creation/updating: {e}")
                 # Handle error, possibly show a message to the user
+                records_form.add_error(None, "There was an error saving the medical record.")
 
-        return render(request, self.template_name, {'form': records_form, 'appointment_id': appointment_id, 'patient_id': patient_id, 'doctor_id': doctor_id})
+        return render(request, self.template_name, {
+            'form': records_form,
+            'appointment_id': appointment_id,
+            'patient_id': patient_id,
+            'doctor_id': doctor_id
+        })
 
 # View instantiation
 records_view = RecordsView.as_view()
